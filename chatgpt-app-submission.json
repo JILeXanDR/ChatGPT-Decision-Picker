@@ -1,0 +1,92 @@
+{
+  "$schema": "https://developers.openai.com/apps-sdk/schemas/chatgpt-app-submission.v1.json",
+  "schema_version": 1,
+  "app_info": {
+    "display_name": "Decision Picker",
+    "subtitle": "Clickable decisions in chat",
+    "description": "Decision Picker turns explicit choices into inline single-choice or bounded multi-select controls, then returns the user's final selection to the conversation in both readable and structured form.",
+    "category": "PRODUCTIVITY"
+  },
+  "tools": {
+    "decision_picker": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Validates and renders decision data without creating, updating, or deleting external records.",
+        "open_world_justification": "Does not publish content or modify any public or third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke, transact, or perform irreversible external actions."
+      }
+    }
+  },
+  "test_cases": [
+    {
+      "description": "Render a card-based single choice with a recommended option.",
+      "user_prompt": "Ask me to choose between Fixed positions and Deterministic Random using clickable cards. Mark Deterministic Random as recommended, but do not preselect it.",
+      "file_attachment_urls": null,
+      "tools_triggered": "decision_picker",
+      "expected_output": "Renders two clickable cards, visually marks only Deterministic Random as recommended, and submits the clicked option immediately.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Render a list-based single choice with descriptive alternatives.",
+      "user_prompt": "Show a clickable list asking whether we should prioritize Speed, Quality, or Cost. Give each choice a short explanation and let me pick exactly one.",
+      "file_attachment_urls": null,
+      "tools_triggered": "decision_picker",
+      "expected_output": "Renders three descriptive list choices and returns the selected option to the conversation after one click.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Use single choice for a binary approve or reject decision.",
+      "user_prompt": "Give me two clickable options: Approve this proposal or Reject this proposal. Explain each option briefly and treat it as a normal single choice.",
+      "file_attachment_urls": null,
+      "tools_triggered": "decision_picker",
+      "expected_output": "Renders a two-option single-choice decision and returns whichever option the user clicks without introducing a separate approve/reject interaction type.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Render a bounded multi-select decision with an explicit submit action.",
+      "user_prompt": "Let me select exactly two priorities from Reliability, Accessibility, Performance, and Documentation. Use clickable choices with descriptions and a Submit button.",
+      "file_attachment_urls": null,
+      "tools_triggered": "decision_picker",
+      "expected_output": "Renders a multi-select control that accepts exactly two selections, keeps Submit disabled until the selection is valid, and submits only through the explicit Submit action.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Render a compact segmented single choice and allow server-generated decision identity.",
+      "user_prompt": "Ask me whether the rollout should be Slow, Normal, or Fast using a segmented clickable control. I only need to choose one.",
+      "file_attachment_urls": null,
+      "tools_triggered": "decision_picker",
+      "expected_output": "Renders a segmented single-choice control, generates a stable decision identifier when one was not supplied, and returns the clicked selection.",
+      "expected_output_url": null
+    }
+  ],
+  "negative_test_cases": [
+    {
+      "description": "Do not trigger for analysis that does not ask the user to make a choice.",
+      "user_prompt": "Compare PostgreSQL and MySQL for a small SaaS backend and explain the tradeoffs.",
+      "file_attachment_urls": null,
+      "tools_triggered": null,
+      "expected_output": "The app should not be invoked because the user requested analysis rather than an interactive decision.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Do not trigger to execute an external action.",
+      "user_prompt": "Deploy my application to production and restart the service.",
+      "file_attachment_urls": null,
+      "tools_triggered": null,
+      "expected_output": "The app should not be invoked because it presents choices but does not deploy, restart, or mutate external systems.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Do not trigger for unsupported free-form text input.",
+      "user_prompt": "Ask me to write a paragraph describing what I thought about the workshop.",
+      "file_attachment_urls": null,
+      "tools_triggered": null,
+      "expected_output": "The app should not be invoked because v1 supports explicit choices only, not free-form text entry.",
+      "expected_output_url": null
+    }
+  ]
+}
