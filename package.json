@@ -4,6 +4,9 @@
   "private": true,
   "type": "module",
   "description": "Reusable inline decision widgets for ChatGPT Apps SDK conversations.",
+  "engines": {
+    "node": ">=22 <23"
+  },
   "scripts": {
     "build": "npm run build:widget && npm run build:server",
     "build:widget": "vite build",
