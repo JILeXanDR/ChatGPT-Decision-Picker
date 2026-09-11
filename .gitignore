@@ -1,0 +1,6 @@
+node_modules/
+dist/
+dist-server/
+.test-build/
+.env
+.DS_Store

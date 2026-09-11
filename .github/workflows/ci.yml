@@ -1,0 +1,38 @@
+name: Decision Picker CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package.json
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Core contract tests
+        run: npm test
+
+      - name: Full Apps SDK build
+        run: npm run build
+
+      - name: Verify self-contained widget
+        run: |
+          test -s dist/widget/index.html
+          ! grep -Eq '<script[^>]+src=|<link[^>]+rel=["'"']stylesheet["'"']' dist/widget/index.html
+          test -s dist-server/server.js
