@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/chatgpt-decision-picker/v1.schema.json",
+  "title": "ChatGPT Decision Picker v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "interactionType", "layout", "question", "options"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "decisionId": { "type": "string", "minLength": 1 },
+    "interactionType": { "enum": ["single_choice", "multi_select"] },
+    "layout": { "enum": ["cards", "list", "segmented"] },
+    "question": { "type": "string", "minLength": 1 },
+    "description": { "type": "string" },
+    "options": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "value", "title", "description"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "value": { "type": "string", "minLength": 1 },
+          "title": { "type": "string", "minLength": 1 },
+          "description": { "type": "string", "minLength": 1 },
+          "recommended": { "type": "boolean", "default": false }
+        }
+      }
+    },
+    "minSelections": { "type": "integer", "minimum": 1 },
+    "maxSelections": { "type": "integer", "minimum": 1 }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "interactionType": { "const": "single_choice" } } },
+      "then": {
+        "not": {
+          "anyOf": [
+            { "required": ["minSelections"] },
+            { "required": ["maxSelections"] }
+          ]
+        }
+      }
+    },
+    {
+      "if": { "properties": { "interactionType": { "const": "multi_select" } } },
+      "then": { "required": ["minSelections", "maxSelections"] }
+    }
+  ]
+}

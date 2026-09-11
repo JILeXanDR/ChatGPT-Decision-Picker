@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "decisionId": "release.validation-gates",
+  "interactionType": "multi_select",
+  "layout": "list",
+  "question": "Which validation gates are required?",
+  "description": "Choose two or three gates; Submit becomes available only inside the allowed range.",
+  "minSelections": 2,
+  "maxSelections": 3,
+  "options": [
+    {
+      "id": "unit-tests",
+      "value": "UNIT_TESTS",
+      "title": "Unit tests",
+      "description": "Run deterministic schema and business-rule tests.",
+      "recommended": true
+    },
+    {
+      "id": "integration",
+      "value": "INTEGRATION_TESTS",
+      "title": "Integration tests",
+      "description": "Verify the app/server/widget boundary end to end.",
+      "recommended": true
+    },
+    {
+      "id": "manual-review",
+      "value": "MANUAL_REVIEW",
+      "title": "Manual review",
+      "description": "Require a human visual/interaction review before release.",
+      "recommended": false
+    }
+  ]
+}

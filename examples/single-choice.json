@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "decisionId": "match-setup.start-slot-policy",
+  "interactionType": "single_choice",
+  "layout": "cards",
+  "question": "How should start slots be assigned?",
+  "description": "Choose the canonical assignment policy for competitive matches.",
+  "options": [
+    {
+      "id": "fixed",
+      "value": "FIXED",
+      "title": "Fixed positions",
+      "description": "Each participant keeps an authored StartSlot assignment.",
+      "recommended": false
+    },
+    {
+      "id": "deterministic-random",
+      "value": "DETERMINISTIC_RANDOM",
+      "title": "Deterministic Random",
+      "description": "The server deterministically permutes eligible StartSlots before match freeze.",
+      "recommended": true
+    }
+  ]
+}
