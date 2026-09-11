@@ -1,0 +1,31 @@
+{
+  "name": "chatgpt-decision-picker",
+  "version": "0.1.0",
+  "description": "Inline structured choices for ChatGPT and Codex conversations.",
+  "author": {
+    "name": "Oleksandr Shtovba",
+    "url": "https://github.com/JILeXanDR"
+  },
+  "homepage": "https://chatgpt-decision-picker-production.up.railway.app",
+  "repository": "https://github.com/JILeXanDR/ChatGPT-Decision-Picker",
+  "keywords": [
+    "decision",
+    "choices",
+    "productivity",
+    "chatgpt",
+    "mcp"
+  ],
+  "interface": {
+    "displayName": "Decision Picker",
+    "shortDescription": "Clickable decisions in chat",
+    "longDescription": "Turn explicit decisions into inline single-choice or bounded multi-select controls, then return the user's final selection to the conversation.",
+    "developerName": "Oleksandr Shtovba",
+    "category": "Productivity",
+    "capabilities": [
+      "Read"
+    ],
+    "websiteURL": "https://chatgpt-decision-picker-production.up.railway.app",
+    "privacyPolicyURL": "https://chatgpt-decision-picker-production.up.railway.app/privacy",
+    "termsOfServiceURL": "https://chatgpt-decision-picker-production.up.railway.app/terms"
+  }
+}

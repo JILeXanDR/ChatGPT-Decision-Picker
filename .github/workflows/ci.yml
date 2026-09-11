@@ -55,3 +55,64 @@ jobs:
           assert not parser.external, f'external widget assets remain: {parser.external}'
           PY
           test -s dist-server/server.js
+
+      - name: Validate plugin submission metadata
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          submission = json.loads(Path('chatgpt-app-submission.json').read_text())
+          manifest = json.loads(Path('.codex-plugin/plugin.json').read_text())
+
+          assert submission['schema_version'] == 1
+          assert submission['$schema'] == 'https://developers.openai.com/apps-sdk/schemas/chatgpt-app-submission.v1.json'
+          assert set(submission['tools']) == {'decision_picker'}
+          annotations = submission['tools']['decision_picker']['annotations']
+          assert annotations == {
+              'readOnlyHint': True,
+              'openWorldHint': False,
+              'destructiveHint': False,
+          }
+          assert len(submission['test_cases']) == 5
+          assert len(submission['negative_test_cases']) == 3
+          assert all(case['tools_triggered'] == 'decision_picker' for case in submission['test_cases'])
+          assert all(case['tools_triggered'] is None for case in submission['negative_test_cases'])
+
+          assert manifest['name'] == 'chatgpt-decision-picker'
+          assert manifest['version'] == '0.1.0'
+          assert manifest['interface']['displayName'] == 'Decision Picker'
+          assert len(manifest['interface']['shortDescription']) <= 30
+          assert manifest['interface']['privacyPolicyURL'].startswith('https://')
+          assert manifest['interface']['termsOfServiceURL'].startswith('https://')
+          PY
+
+      - name: Smoke public submission routes
+        run: |
+          PORT=8123 \
+          PUBLIC_ORIGIN=http://127.0.0.1:8123 \
+          OPENAI_APPS_CHALLENGE_TOKEN=decision-picker-ci-token \
+          npm start > /tmp/decision-picker-server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:8123/health >/dev/null; then
+              break
+            fi
+            if [ "$attempt" -eq 30 ]; then
+              cat /tmp/decision-picker-server.log
+              exit 1
+            fi
+            sleep 1
+          done
+
+          curl -fsS http://127.0.0.1:8123/ >/dev/null
+          curl -fsS http://127.0.0.1:8123/privacy >/dev/null
+          curl -fsS http://127.0.0.1:8123/terms >/dev/null
+          curl -fsS http://127.0.0.1:8123/support >/dev/null
+          test "$(curl -fsS http://127.0.0.1:8123/.well-known/openai-apps-challenge)" = "decision-picker-ci-token"
+
+          kill "$server_pid"
+          wait "$server_pid" 2>/dev/null || true
+          trap - EXIT
