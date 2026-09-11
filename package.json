@@ -6,7 +6,7 @@
   "description": "Reusable inline decision widgets for ChatGPT Apps SDK conversations.",
   "scripts": {
     "build": "npm run build:widget && npm run build:server",
-    "build:widget": "vite build && node scripts/inline-widget.mjs",
+    "build:widget": "vite build",
     "build:server": "tsc -p tsconfig.server.json",
     "start": "node dist-server/server.js",
     "start:dev": "tsx src/server.ts",
@@ -30,6 +30,7 @@
     "@vitejs/plugin-react": "^4.5.2",
     "tsx": "^4.20.4",
     "typescript": "^5.9.2",
-    "vite": "^7.1.1"
+    "vite": "^7.1.1",
+    "vite-plugin-singlefile": "^2.3.3"
   }
 }

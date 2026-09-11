@@ -35,10 +35,23 @@ jobs:
         run: |
           test -s dist/widget/index.html
           python - <<'PY'
-          import re
+          from html.parser import HTMLParser
           from pathlib import Path
-          html = Path('dist/widget/index.html').read_text()
-          assert not re.search(r'<script[^>]+\bsrc=', html, re.I), 'external script reference remains'
-          assert not re.search(r'<link[^>]+\brel=[\"\']stylesheet[\"\']', html, re.I), 'external stylesheet reference remains'
+
+          class ExternalAssetParser(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.external = []
+
+              def handle_starttag(self, tag, attrs):
+                  values = dict(attrs)
+                  if tag == 'script' and values.get('src'):
+                      self.external.append(('script', values['src']))
+                  if tag == 'link' and values.get('rel') == 'stylesheet' and values.get('href'):
+                      self.external.append(('stylesheet', values['href']))
+
+          parser = ExternalAssetParser()
+          parser.feed(Path('dist/widget/index.html').read_text())
+          assert not parser.external, f'external widget assets remain: {parser.external}'
           PY
           test -s dist-server/server.js
