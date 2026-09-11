@@ -94,7 +94,31 @@ The server uses stateless Streamable HTTP. The MCP endpoint is then available at
 http://localhost:8000/mcp
 ```
 
-For ChatGPT integration, expose the MCP endpoint over HTTPS using your normal development tunnel/deployment and connect that endpoint as a ChatGPT App/MCP integration supported by your account.
+## Railway deployment
+
+The repository includes `railway.json` so Railway uses Railpack, runs the production build, starts Node directly, and verifies `/health` before activating a deployment.
+
+Production contract:
+
+```text
+Build:  npm run build
+Start:  node dist-server/server.js
+Health: /health
+MCP:    /mcp
+Runtime: Node 22
+```
+
+After Railway assigns a public HTTPS domain, the ChatGPT App endpoint is:
+
+```text
+https://<railway-domain>/mcp
+```
+
+## ChatGPT integration
+
+Enable Developer Mode, create a custom app, provide the deployed `/mcp` endpoint, choose no authentication for the current public stateless v1 server, run **Scan Tools**, and create the draft app. Then open a new chat and select or mention the draft app to test the inline widget.
+
+The current `decision_picker` tool is read-only from the MCP server's perspective; a user choice is returned to the conversation through the Apps SDK widget using `app.sendMessage(...)`.
 
 ## Files
 
@@ -106,6 +130,12 @@ For ChatGPT integration, expose the MCP endpoint over HTTPS using your normal de
 - `examples/` — single-choice and multi-select examples.
 - `tests/` — dependency-free core contract tests.
 
-## Current verification boundary
+## Verification
 
-Core schema/payload tests can run without third-party packages after TypeScript compilation. A full widget/server build additionally requires the declared npm dependencies. The repository intentionally treats dependency/API mismatch as a build failure rather than silently falling back.
+CI requires all of the following to pass:
+
+- core decision-schema tests;
+- full Apps SDK server/widget compilation;
+- self-contained widget packaging with no external JS/CSS asset tags.
+
+Dependency/API mismatch or broken widget packaging is a hard failure.
